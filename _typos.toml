@@ -1,0 +1,3 @@
+[default.extend-words]
+# Intentionally truncated words
+ERRO = "ERRO"
