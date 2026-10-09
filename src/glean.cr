@@ -1,6 +1,5 @@
-# TODO: Write documentation for `Glean`
-module Glean
-  VERSION = "0.0.1"
+require "./glean/*"
 
-  # TODO: Put your code here
+# Fancy typed terminal forms and prompts.
+module Glean
 end
