@@ -63,6 +63,16 @@ describe Glean::EmbeddedAccessor do
     accessor.write(replacement, "choice")
     accessor.read("choice").should eq(replacement)
   end
+
+  it "keeps each instance's stored value separated" do
+    first = Glean::EmbeddedAccessor(String).new("initial")
+    second = Glean::EmbeddedAccessor(String).new("initial")
+
+    first.write("changed", "first")
+
+    first.read("first").should eq("changed")
+    second.read("second").should eq("initial")
+  end
 end
 
 describe Glean::BoundAccessor do
@@ -249,6 +259,37 @@ describe Glean::BoundAccessor do
     calls.should eq(1)
     state.should eq("initial")
     accessor.read("name").should eq("initial")
+
+    failing = false
+    accessor.write("accepted", "name").should be_nil
+
+    calls.should eq(2)
+    state.should eq("accepted")
+  end
+
+  it "raises even when the setter changes state before failing" do
+    state = "initial"
+    calls = 0
+    failing = true
+    cause = Exception.new("failed after changing state")
+    getter = -> { state }
+    setter = ->(value : String) {
+      calls += 1
+      state = value
+      raise cause if failing
+      nil
+    }
+
+    accessor = Glean::BoundAccessor(String).new(getter, setter)
+
+    error = expect_raises(Glean::AccessorWriteError) do
+      accessor.write("candidate", "name")
+    end
+
+    error.field_key.should eq("name")
+    error.cause.should be(cause)
+    calls.should eq(1)
+    state.should eq("candidate")
 
     failing = false
     accessor.write("accepted", "name").should be_nil
