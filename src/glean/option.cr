@@ -1,7 +1,7 @@
 module Glean
   # Immutable label and value for choice type Field display presentation state.
   #
-  # Equality and hashing methods include both the labels and the value.
+  # Equality and hashing methods apply to both the labels and the value combined.
   struct Option(T)
     getter label : String
     getter value : T

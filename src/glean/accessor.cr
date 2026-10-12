@@ -14,9 +14,9 @@ module Glean
     abstract def write(value : T, field_key : String) : Nil
   end
 
-  # Owns a typed storage slot without interpreting the stored value as a default.
+  # Stores one value of type T.
   #
-  # Each instance has independent storage and stored mutable referencs aren't copied.
+  # Each instance has its own storage. Mutable objects are stored as references and not copies.
   class EmbeddedAccessor(T) < Accessor(T)
     def initialize(@value : T)
     end
